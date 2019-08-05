@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Built on https://askubuntu.com/a/519045
-#License: AGPL v 3.0
+#License: GPL v 3.0
 #Copyrigt: Damascene
 
 import subprocess
