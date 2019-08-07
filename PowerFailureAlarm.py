@@ -3,6 +3,9 @@
 #License: GPL v 3.0
 #Copyrigt: Damascene
 
+# Works on Linux, Tested on Ububntu 16.04
+# ssmtp package could be used and configured for email notfications functionality
+
 import subprocess
 import time
 
@@ -16,22 +19,32 @@ def read_status():
 
 def take_action():
     """
-    When the adaptor is connected, I assume the action does
-    not have to be repeated every 10 seconds. As it is, it only runs
-    1 time if status fliped.
+    It checks the adaptor status every 10 seconds.
+    When a change does happen it reprots it.
     """
     # the two commands to run if adapter is connected or not
+    # Uncomment the following two line to enable email notification
+    # command_on = '''echo "POWER ALERT - ON" | mail -s "POWER ALERT - ON" maile@example.com'''
+    # command_off = '''echo "POWER ALERT - OFF" | mail -s "POWER ALERT - OFF" maile@example.com'''
     command_on = "notify-send On-line"
     command_off = "notify-send Off-line"
     last = "on"
+    # open file for writig in append mode and create if not exist (a+)
+    f= open("power.log","a+")
     while True:
         charge = str(read_status())
-        if charge == "on-line2":
+        if charge == "on-line":
             if last == "off":
+                f.write("\nPower ON, "+time.strftime('%d-%m-%Y %H:%M:%S'))      #save data to a log file with timestamp
+                # commit data to file so it shows in tail 
+                f.flush()
                 subprocess.Popen(["/bin/bash", "-c", command_on])
                 last = "on"
-        elif charge == "off-line2":
+        elif charge == "off-line":
             if last == "on":
+                f.write("\nPower OFF, "+time.strftime('%d-%m-%Y %H:%M:%S'))     #save data to a log file with timestamp
+                # commit data to file so it shows in tail
+                f.flush()
                 subprocess.Popen(["/bin/bash", "-c", command_off])
                 last = "off"
         else:
